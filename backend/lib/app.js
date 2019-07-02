@@ -1,0 +1,159 @@
+require('./init');
+const express = require('express')
+const winston = require('winston')
+const mongoose = require('mongoose')
+const formidable = require('formidable')
+const async = require('async')
+const moment = require('moment')
+const cors = require('cors');
+
+const config = require('./config')
+const models = require('./models')
+
+const port = config.getConf('server:port')
+const mongoUser = config.getConf("DB_USER")
+const mongoPasswd = config.getConf("DB_PASSWORD")
+const mongoHost = config.getConf("DB_HOST")
+const mongoPort = config.getConf("DB_PORT")
+const database = config.getConf("DB_NAME")
+let mongoURI
+if (mongoUser && mongoPasswd) {
+  mongoURI = `mongodb://${mongoUser}:${mongoPasswd}@${mongoHost}:${mongoPort}/${database}`;
+} else {
+  mongoURI = `mongodb://${mongoHost}:${mongoPort}/${database}`;
+}
+mongoose.connect(mongoURI);
+let db = mongoose.connection
+db.on("error", console.error.bind(console, "connection error:"))
+db.once("open", () => {
+  winston.info('DB Connection established')
+})
+const app = express()
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
+app.post('/addProject', (req, res) => {
+  winston.info("Adding a project")
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    let Project = new models.ProjectModel({
+      name: fields.name,
+      date: fields.date,
+      code: fields.code
+    })
+    Project.save((err, data) => {
+      if (err) {
+        winston.error(err)
+        winston.error('Unexpected error occured,please retry')
+        res.status(500).send()
+      } else {
+        winston.info('Project added successfully')
+        res.status(200).send()
+      }
+    })
+  })
+})
+
+app.get('/getProjects', (req, res) => {
+  let id = req.query.id
+  winston.info('Getting projects')
+  let filter = {}
+  if (id) {
+    filter = {
+      _id: id
+    }
+  }
+  models.ProjectModel.find(filter).lean().exec({}, (err, data) => {
+    if (err) {
+      winston.error(err);
+      res.status(200).send('Unexpected error occured,please retry')
+    }
+    res.status(200).json(data)
+  });
+})
+
+app.post('/addTime', (req, res) => {
+  winston.info("Adding time worked")
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    let Hours = new models.HoursModel({
+      project: fields.project,
+      time: fields.time,
+      date: fields.date,
+    })
+    Hours.save((err, data) => {
+      if (err) {
+        winston.error(err)
+        winston.error('Unexpected error occured,please retry')
+        res.status(500).send()
+      } else {
+        winston.info('Time added successfully')
+        res.status(200).send()
+      }
+    })
+  })
+})
+
+app.get('/getTime', (req, res) => {
+  let startDate = req.query.startDate
+  let endDate = req.query.endDate
+  let project = req.query.project
+  winston.info("Getting time worked")
+  let filter = {}
+  if (startDate && endDate) {
+    filter = {
+      "date": {
+        "$gte": startDate,
+        "$lte": endDate,
+      }
+    }
+  }
+  if (project && project != 'undefined') {
+    filter.project = project
+  }
+  models.HoursModel.find(filter).populate('project').lean().exec({}, (err, data) => {
+    if (err) {
+      winston.error(err);
+      res.status(200).send('Unexpected error occured,please retry')
+    }
+    let totalHours = '0:00'
+    let timeSheet = {
+      rows: [],
+      totalHours: totalHours
+    }
+    async.each(data, (timeData, nxtTime) => {
+      let time = timeData.time.split("-")
+      let time1 = time[0]
+      let time2 = time[1]
+      let ms = moment(time2, "HH:mm").diff(moment(time1, "HH:mm"));
+      let d = moment.duration(ms);
+      let hours = Math.floor(d.asHours()) + moment.utc(ms).format(":mm");
+      totalHours = sumHours([totalHours, hours])
+      timeSheet.rows.push({
+        project: timeData.project.name,
+        hours: hours,
+        timeRange: timeData.time,
+        date: moment(timeData.date).format("DD-MM-YYYY")
+      })
+      return nxtTime()
+    }, () => {
+      timeSheet.totalHours = totalHours
+      res.status(200).json(timeSheet)
+    })
+  });
+
+  function sumHours(hours) {
+    const totalDurations = hours.slice(1)
+      .reduce((prev, cur) => moment.duration(cur).add(prev),
+        moment.duration(hours[0]))
+
+    return moment.utc(totalDurations.asMilliseconds()).format("HH:mm")
+  }
+})
+
+app.listen(port, () => {
+  winston.info("Server is running and listening on port " + port)
+})
