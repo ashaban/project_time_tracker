@@ -29,11 +29,11 @@
           style="max-width: 1000px;"
         >
           <v-system-bar
-            color="deep-purple darken-4"
+            color="grey darken-2"
             dark
           />
           <v-toolbar
-            color="deep-purple accent-4"
+            color="grey darken-1"
             cards
             dark
             flat
@@ -153,10 +153,8 @@ export default {
         }
       }).then(() => {
         let fields = Object.keys(this.$v.$params)
-        for (let field of fields) {
-          this.$v[field].$reset()
-        }
-        this.$refs.form.reset()
+        this.project = ''
+        this.time = ''
         this.$store.state.dynamicProgress = false
         this.alertSuccess = true
         this.alertMsg = 'Time added successfully'

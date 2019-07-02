@@ -19,8 +19,7 @@ let Project = new mongoose.Schema({
 let Hours = new mongoose.Schema({
   time: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   project: {
     type: Schema.Types.ObjectId,

@@ -97,6 +97,27 @@ app.post('/addTime', (req, res) => {
   })
 })
 
+app.post('/updateTime', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    let id = fields._id
+    models.HoursModel.findByIdAndUpdate(id, {
+      project: fields.project,
+      time: fields.time,
+      date: fields.date
+    }, (err, data) => {
+      if (err) {
+        winston.error(err)
+        winston.error('Unexpected error occured,please retry')
+        res.status(500).send()
+      } else {
+        winston.info('Time updated successfully')
+        res.status(200).send()
+      }
+    })
+  })
+})
+
 app.get('/getTime', (req, res) => {
   let startDate = req.query.startDate
   let endDate = req.query.endDate
@@ -133,7 +154,9 @@ app.get('/getTime', (req, res) => {
       let hours = Math.floor(d.asHours()) + moment.utc(ms).format(":mm");
       totalHours = sumHours([totalHours, hours])
       timeSheet.rows.push({
+        _id: timeData._id,
         project: timeData.project.name,
+        project_id: timeData.project._id,
         hours: hours,
         timeRange: timeData.time,
         date: moment(timeData.date).format("DD-MM-YYYY")
