@@ -90,16 +90,19 @@
 </template>
 
 <script>
-const backendServer = process.env.VUE_APP_BACKEND_SERVER;
-import axios from "axios";
+import axios from 'axios';
+const backendServer = process.env.VUE_APP_BACKEND_SERVER
 export default {
-  name: "App",
+  name: 'App',
   components: {},
   data () {
     return {
-      title: "PROJECT TIME TRACKER",
+      title: 'PROJECT TIME TRACKER',
       fixed: false
-    };
+    }
+  },
+  created () {
+    this.$router.push({ name: 'TimeReport' })
   }
-};
+}
 </script>

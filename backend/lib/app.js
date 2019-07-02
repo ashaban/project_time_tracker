@@ -34,6 +34,7 @@ app.use(cors({
   origin: true,
   credentials: true
 }));
+app.use(express.static(`${__dirname}/../gui`));
 
 app.post('/addProject', (req, res) => {
   winston.info("Adding a project")
