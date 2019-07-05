@@ -250,6 +250,8 @@ export default {
   },
   data () {
     return {
+      startDate: '',
+      endDate: '',
       timeObject: {},
       alertFail: false,
       alertSuccess: false,
@@ -317,10 +319,8 @@ export default {
         this.alertMsg = 'This Time was not added, something went wrong'
         console.log(err.response.data.error)
       })
-    }
-  },
-  computed: {
-    endDate () {
+    },
+    defaultEndDate () {
       let today = new Date()
       let month = today.getMonth() + 1
       if (month.toString().length === 1) {
@@ -331,7 +331,7 @@ export default {
       let date = year + '-' + month + '-' + lastDay
       return new Date(date).toISOString().substr(0, 10)
     },
-    startDate () {
+    defaultStartDate () {
       let today = new Date()
       let month = today.getMonth() + 1
       if (month.toString().length === 1) {
@@ -340,7 +340,9 @@ export default {
       let year = today.getFullYear()
       let date = year + '-' + month + '-' + '01'
       return new Date(date).toISOString().substr(0, 10)
-    },
+    }
+  },
+  computed: {
     startDateFormatted () {
       if (!this.startDate) {
         return null
@@ -382,6 +384,8 @@ export default {
     }
   },
   created () {
+    this.startDate = this.defaultStartDate()
+    this.endDate = this.defaultEndDate()
     this.getReport()
     this.getProjects()
   }

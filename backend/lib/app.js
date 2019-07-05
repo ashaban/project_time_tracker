@@ -170,11 +170,22 @@ app.get('/getTime', (req, res) => {
   });
 
   function sumHours(hours) {
-    const totalDurations = hours.slice(1)
-      .reduce((prev, cur) => moment.duration(cur).add(prev),
-        moment.duration(hours[0]))
-
-    return moment.utc(totalDurations.asMilliseconds()).format("HH:mm")
+    let hour1 = hours[0]
+    let hour2 = hours[1]
+    let hour1Arr = hour1.split(":")
+    let hour2Arr = hour2.split(":")
+    let totalHours = parseInt(hour1Arr[0]) + parseInt(hour2Arr[0])
+    let totalMins = parseInt(hour1Arr[1]) + parseInt(hour2Arr[1])
+    if (totalMins > 59) {
+      let hoursInMins = (totalMins / 60).toString()
+      let hoursInMinsArr = hoursInMins.split(".")
+      totalHours += parseInt(hoursInMinsArr[0])
+      totalMins = totalMins - hoursInMinsArr[0] * 60
+    }
+    if (totalMins.toString().length === 1) {
+      totalMins = "0" + totalMins.toString()
+    }
+    return totalHours + ":" + totalMins
   }
 })
 
