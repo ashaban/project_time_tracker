@@ -10,13 +10,6 @@
       <v-toolbar-items>
         <v-btn
           flat
-          to="AddProject"
-          v-if="!$store.state.denyAccess"
-        >
-          <v-icon>add</v-icon> Add Project
-        </v-btn>
-        <v-btn
-          flat
           to="AddTime"
           v-if="!$store.state.denyAccess"
         >
@@ -28,6 +21,13 @@
           v-if="!$store.state.denyAccess"
         >
           <v-icon>list</v-icon> Time Report
+        </v-btn>
+        <v-btn
+          flat
+          to="AddProject"
+          v-if="!$store.state.denyAccess"
+        >
+          <v-icon>add</v-icon> Add Project
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>

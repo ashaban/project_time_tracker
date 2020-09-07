@@ -38,7 +38,7 @@
             dark
             flat
           >
-            <v-card-title class="title font-weight-regular">Add Time</v-card-title>
+            <v-card-title class="title font-weight-regular">Add Time (24 Hours Format)</v-card-title>
           </v-toolbar>
           <v-form
             ref="form"
