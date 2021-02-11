@@ -43,7 +43,8 @@ app.post('/addProject', (req, res) => {
     let Project = new models.ProjectModel({
       name: fields.name,
       date: fields.date,
-      code: fields.code
+      code: fields.code,
+      status: 'active'
     })
     Project.save((err, data) => {
       if (err) {
@@ -60,12 +61,16 @@ app.post('/addProject', (req, res) => {
 
 app.get('/getProjects', (req, res) => {
   let id = req.query.id
+  let status = req.query.status
   winston.info('Getting projects')
   let filter = {}
   if (id) {
     filter = {
       _id: id
     }
+  }
+  if(status) {
+    filter.status = status
   }
   models.ProjectModel.find(filter).lean().exec({}, (err, data) => {
     if (err) {
@@ -113,6 +118,25 @@ app.post('/updateTime', (req, res) => {
         res.status(500).send()
       } else {
         winston.info('Time updated successfully')
+        res.status(200).send()
+      }
+    })
+  })
+})
+
+app.post('/changeProjectStatus', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    let id = fields.id
+    models.ProjectModel.findByIdAndUpdate(id, {
+      status: fields.status
+    }, (err, data) => {
+      if (err) {
+        winston.error(err)
+        winston.error('Unexpected error occured,please retry')
+        res.status(500).send()
+      } else {
+        winston.info('Project updated successfully')
         res.status(200).send()
       }
     })

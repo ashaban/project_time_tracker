@@ -46,7 +46,7 @@
           >
             <v-layout column>
               <v-flex>
-                <v-select
+                <v-autocomplete
                   required
                   :items="projects"
                   v-model="project"
@@ -59,7 +59,7 @@
                   :error-messages="projectErrors"
                   box
                   label="Project"
-                ></v-select>
+                ></v-autocomplete>
                 <v-text-field
                   required
                   @blur="$v.time.$touch()"
@@ -197,7 +197,7 @@ export default {
     }
   },
   created () {
-    this.getProjects()
+    this.getProjects('active')
   }
 }
 </script>

@@ -7,8 +7,11 @@ export const generalMixin = {
     }
   },
   methods: {
-    getProjects () {
-      axios.get(backendServer + '/getProjects').then((response) => {
+    getProjects (status) {
+      if(!status) {
+        status = ''
+      }
+      axios.get(backendServer + '/getProjects?status=' + status).then((response) => {
         this.projects = response.data
       })
     }

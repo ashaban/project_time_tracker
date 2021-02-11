@@ -23,7 +23,7 @@
         <v-card-text>
           <v-layout column>
             <v-flex xs1>
-              <v-select
+              <v-autocomplete
                 required
                 :items="projects"
                 v-model="editProject"
@@ -36,7 +36,7 @@
                 :error-messages="editProjectErrors"
                 box
                 label="Project"
-              ></v-select>
+              ></v-autocomplete>
               <v-text-field
                 required
                 @blur="$v.time.$touch()"
@@ -157,7 +157,7 @@
       </v-flex>
       <v-spacer></v-spacer>
       <v-flex>
-        <v-select
+        <v-autocomplete
           required
           :items="projects"
           v-model="project"
@@ -166,7 +166,7 @@
           single-line
           clearable
           label="Project"
-        ></v-select>
+        ></v-autocomplete>
       </v-flex>
       <v-spacer></v-spacer>
       <v-flex xs2>

@@ -29,6 +29,13 @@
         >
           <v-icon>add</v-icon> Add Project
         </v-btn>
+        <v-btn
+          flat
+          to="projectsReport"
+          v-if="!$store.state.denyAccess"
+        >
+          <v-icon>list</v-icon> Projects
+        </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items> </v-toolbar-items>
