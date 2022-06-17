@@ -1,22 +1,10 @@
 <template>
   <v-container grid-list-xs>
-    <v-dialog
-      v-if="editDialog"
-      persistent
-      v-model="editDialog"
-      width="530px"
-    >
-      <v-card width='530px'>
-        <v-toolbar
-          color="secondary"
-          dark
-        >
+    <v-dialog v-if="editDialog" persistent v-model="editDialog" width="530px">
+      <v-card width="530px">
+        <v-toolbar color="secondary" dark>
           <v-spacer></v-spacer>
-          <v-btn
-            icon
-            dark
-            @click.native="editDialog = false"
-          >
+          <v-btn icon dark @click.native="editDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -74,16 +62,13 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-card-actions style='float: center'>
+        <v-card-actions style="float: center">
           <v-btn
             color="error"
             @click.native="editDialog = false"
             style="color: white"
           >
-            <v-icon
-              dark
-              left
-            >cancel</v-icon>Cancel
+            <v-icon dark left>cancel</v-icon>Cancel
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
@@ -97,10 +82,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap>
       <v-spacer></v-spacer>
       <v-flex xs2>
         <v-menu
@@ -170,11 +152,7 @@
       </v-flex>
       <v-spacer></v-spacer>
       <v-flex xs2>
-        <v-btn
-          color="secondary"
-          round
-          @click="getReport"
-        >
+        <v-btn color="secondary" round @click="getReport">
           <v-icon left>list</v-icon> Filter
         </v-btn>
       </v-flex>
@@ -186,7 +164,7 @@
       dismissible
       transition="scale-transition"
     >
-      {{alertMsg}}
+      {{ alertMsg }}
     </v-alert>
     <v-alert
       style="width: 500px"
@@ -195,7 +173,7 @@
       dismissible
       transition="scale-transition"
     >
-      {{alertMsg}}
+      {{ alertMsg }}
     </v-alert>
     <v-data-table
       :headers="reportHeader"
@@ -207,40 +185,38 @@
         <td>{{ props.item.project }}</td>
         <td>{{ props.item.date }}</td>
         <td>{{ props.item.timeRange }}</td>
-        <td>{{ props.item.hours }}</td>
+        <td>{{ props.item.durationHours }}</td>
+        <td>{{ props.item.durationMinutes }}</td>
+        <td>{{ props.item.durationSeconds }}</td>
         <td>
-          <v-btn
-            color="secondary"
-            round
-            icon
-            @click="editTime(props.item)"
-          >
+          <v-btn color="secondary" round icon @click="editTime(props.item)">
             <v-icon>edit</v-icon>
           </v-btn>
         </td>
       </template>
     </v-data-table>
-    <v-layout
-      row
-      wrap
-    >
-      <v-flex xs10>
-
+    <v-layout row wrap>
+      <v-flex xs2> </v-flex>
+      <v-flex xs2 align-content-end>
+        <b>Total {{ totalDurationHours }} Hours</b>
       </v-flex>
-      <v-flex
-        xs2
-        align-content-end
-      >
-        <b>Total {{totalHours}} Hours</b>
+      <v-flex xs2 align-content-end>
+        <b>Total {{ totalDurationMinutes }} Minutes</b>
+      </v-flex>
+      <v-flex xs2 align-content-end>
+        <b>Total {{ totalDurationSeconds }} Seconds</b>
+      </v-flex>
+      <v-flex xs2 align-content-end>
+        <b>Total {{ totalHours }} Hours:Minutes</b>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 <script>
-import axios from 'axios'
-import { generalMixin } from '@/components/generalMixin'
-import { required } from 'vuelidate/lib/validators'
-const backendServer = process.env.VUE_APP_BACKEND_SERVER
+import axios from "axios";
+import { generalMixin } from "@/components/generalMixin";
+import { required } from "vuelidate/lib/validators";
+const backendServer = process.env.VUE_APP_BACKEND_SERVER;
 export default {
   mixins: [generalMixin],
   validations: {
@@ -248,146 +224,169 @@ export default {
     editProject: { required },
     time: { required }
   },
-  data () {
+  data() {
     return {
-      startDate: '',
-      endDate: '',
+      startDate: "",
+      endDate: "",
       timeObject: {},
       alertFail: false,
       alertSuccess: false,
-      alertMsg: '',
+      alertMsg: "",
       editDialog: false,
       dateMenu: false,
       date: new Date().toISOString().substr(0, 10),
-      editProject: '',
-      project: '',
-      time: '',
-      project: '',
-      totalHours: '0:00',
+      editProject: "",
+      project: "",
+      time: "",
+      project: "",
+      totalHours: "0:00",
+      totalDurationHours: "",
+      totalDurationMinutes: "",
+      totalDurationSeconds: "",
       reportRows: [],
       reportHeader: [
         { text: "Project", value: "project" },
         { text: "Date", value: "date" },
         { text: "Time Range", value: "time" },
         { text: "Hours", value: "hours" },
+        { text: "Minutes", value: "minutes" },
+        { text: "Seconds", value: "seconds" }
       ],
       startDateMenu: false,
       endDateMenu: false
-    }
+    };
   },
   methods: {
-    getReport () {
-      axios.get(backendServer + '/getTime?startDate=' + this.startDate + '&endDate=' + this.endDate + '&project=' + this.project).then((response) => {
-        this.reportRows = response.data.rows
-        this.totalHours = response.data.totalHours
-      })
+    getReport() {
+      axios
+        .get(
+          backendServer +
+            "/getTime?startDate=" +
+            this.startDate +
+            "&endDate=" +
+            this.endDate +
+            "&project=" +
+            this.project
+        )
+        .then(response => {
+          this.reportRows = response.data.rows;
+          this.totalHours = response.data.totalHours;
+          this.totalDurationHours = response.data.totalDurationHours;
+          this.totalDurationMinutes = response.data.totalDurationMinutes;
+          this.totalDurationSeconds = response.data.totalDurationSeconds;
+        });
     },
-    editTime (time) {
-      this.timeObject = time
-      this.editDialog = true
-      this.editProject = time.project_id
-      this.time = time.timeRange
-      let date = time.date.split('-')
-      this.date = new Date(date[2] + '-' + date[1] + '-' + date[0]).toISOString().substr(0, 10)
+    editTime(time) {
+      this.timeObject = time;
+      this.editDialog = true;
+      this.editProject = time.project_id;
+      this.time = time.timeRange;
+      let date = time.date.split("-");
+      this.date = new Date(date[2] + "-" + date[1] + "-" + date[0])
+        .toISOString()
+        .substr(0, 10);
     },
-    saveEdit () {
-      this.$store.state.dynamicProgress = true
-      this.$store.state.progressTitle = 'Saving Time'
-      let formData = new FormData()
-      formData.append('project', this.editProject)
-      formData.append('_id', this.timeObject._id)
-      formData.append('date', this.date)
-      formData.append('time', this.time)
-      axios.post(backendServer + '/updateTime/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(() => {
-        this.editProject = ''
-        this.time = ''
-        this.editDialog = false
-        this.$store.state.dynamicProgress = false
-        this.alertSuccess = true
-        this.alertMsg = 'Time added successfully'
-        this.getReport()
-        setTimeout(() => {
-          this.alertSuccess = false
-        }, 3000)
-      }).catch((err) => {
-        this.$store.state.dynamicProgress = false
-        this.alertFail = true
-        this.alertMsg = 'This Time was not added, something went wrong'
-        console.log(err.response.data.error)
-      })
+    saveEdit() {
+      this.$store.state.dynamicProgress = true;
+      this.$store.state.progressTitle = "Saving Time";
+      let formData = new FormData();
+      formData.append("project", this.editProject);
+      formData.append("_id", this.timeObject._id);
+      formData.append("date", this.date);
+      formData.append("time", this.time);
+      axios
+        .post(backendServer + "/updateTime/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(() => {
+          this.editProject = "";
+          this.time = "";
+          this.editDialog = false;
+          this.$store.state.dynamicProgress = false;
+          this.alertSuccess = true;
+          this.alertMsg = "Time added successfully";
+          this.getReport();
+          setTimeout(() => {
+            this.alertSuccess = false;
+          }, 3000);
+        })
+        .catch(err => {
+          this.$store.state.dynamicProgress = false;
+          this.alertFail = true;
+          this.alertMsg = "This Time was not added, something went wrong";
+          console.log(err.response.data.error);
+        });
     },
-    defaultEndDate () {
-      let today = new Date()
-      let month = today.getMonth() + 1
+    defaultEndDate() {
+      let today = new Date();
+      let month = today.getMonth() + 1;
       if (month.toString().length === 1) {
-        month = '0' + month
+        month = "0" + month;
       }
-      let year = today.getFullYear()
+      let year = today.getFullYear();
       let lastDay = new Date(year, month, 0).getDate();
-      let date = year + '-' + month + '-' + lastDay
-      return new Date(date).toISOString().substr(0, 10)
+      let date = year + "-" + month + "-" + lastDay;
+      return new Date(date).toISOString().substr(0, 10);
     },
-    defaultStartDate () {
-      let today = new Date()
-      let month = today.getMonth() + 1
+    defaultStartDate() {
+      let today = new Date();
+      let month = today.getMonth() + 1;
       if (month.toString().length === 1) {
-        month = '0' + month
+        month = "0" + month;
       }
-      let year = today.getFullYear()
-      let date = year + '-' + month + '-' + '01'
-      return new Date(date).toISOString().substr(0, 10)
+      let year = today.getFullYear();
+      let date = year + "-" + month + "-" + "01";
+      return new Date(date).toISOString().substr(0, 10);
     }
   },
   computed: {
-    startDateFormatted () {
+    startDateFormatted() {
       if (!this.startDate) {
-        return null
+        return null;
       }
-      const [year, month, day] = this.startDate.split('-')
-      return `${day}/${month}/${year}`
+      const [year, month, day] = this.startDate.split("-");
+      return `${day}/${month}/${year}`;
     },
-    endDateFormatted () {
+    endDateFormatted() {
       if (!this.endDate) {
-        return null
+        return null;
       }
-      const [year, month, day] = this.endDate.split('-')
-      return `${day}/${month}/${year}`
+      const [year, month, day] = this.endDate.split("-");
+      return `${day}/${month}/${year}`;
     },
-    dateFormatted () {
+    dateFormatted() {
       if (!this.date) {
-        return null
+        return null;
       }
-      const [year, month, day] = this.date.split('-')
-      return `${day}/${month}/${year}`
+      const [year, month, day] = this.date.split("-");
+      return `${day}/${month}/${year}`;
     },
-    editProjectErrors () {
-      const errors = []
-      if (!this.$v.editProject.$dirty) return errors
-      !this.$v.editProject.required && errors.push('Project is required')
-      return errors
+    editProjectErrors() {
+      const errors = [];
+      if (!this.$v.editProject.$dirty) return errors;
+      !this.$v.editProject.required && errors.push("Project is required");
+      return errors;
     },
-    dateErrors () {
-      const errors = []
-      if (!this.$v.date.$dirty) return errors
-      !this.$v.date.required && errors.push('Date is required')
-      return errors
+    dateErrors() {
+      const errors = [];
+      if (!this.$v.date.$dirty) return errors;
+      !this.$v.date.required && errors.push("Date is required");
+      return errors;
     },
-    timeErrors () {
-      const errors = []
-      if (!this.$v.time.$dirty) return errors
-      !this.$v.time.required && errors.push('Time is required')
-      return errors
+    timeErrors() {
+      const errors = [];
+      if (!this.$v.time.$dirty) return errors;
+      !this.$v.time.required && errors.push("Time is required");
+      return errors;
     }
   },
-  created () {
-    this.startDate = this.defaultStartDate()
-    this.endDate = this.defaultEndDate()
-    this.getReport()
-    this.getProjects()
+  created() {
+    this.startDate = this.defaultStartDate();
+    this.endDate = this.defaultEndDate();
+    this.getReport();
+    this.getProjects();
   }
-}
+};
 </script>

@@ -103,6 +103,32 @@ app.post('/addTime', (req, res) => {
   })
 })
 
+app.post('/addAutoTime', (req, res) => {
+  winston.info("Adding time worked")
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    let workData = JSON.parse(fields.workData)
+    for(let time of workData.time) {
+      let Hours = new models.HoursModel({
+        project: workData.project,
+        task: workData.task,
+        time: time.start + "-" + time.end,
+        date: moment(time.date, "DD-MM-YYYY").format("YYYY-MM-DD"),
+      })
+      Hours.save((err, data) => {
+        if (err) {
+          winston.error(err)
+          winston.error('Unexpected error occured,please retry')
+          res.status(500).send()
+        } else {
+          winston.info('Time added successfully')
+          res.status(200).send()
+        }
+      })
+    }
+  })
+})
+
 app.post('/updateTime', (req, res) => {
   const form = new formidable.IncomingForm();
   form.parse(req, (err, fields, files) => {
@@ -168,7 +194,10 @@ app.get('/getTime', (req, res) => {
     let totalHours = '0:00'
     let timeSheet = {
       rows: [],
-      totalHours: totalHours
+      totalHours: totalHours,
+      totalDurationHours: 0,
+      totalDurationMinutes: 0,
+      totalDurationSeconds: 0
     }
     async.each(data, (timeData, nxtTime) => {
       let time = timeData.time.split("-")
@@ -178,17 +207,28 @@ app.get('/getTime', (req, res) => {
       let d = moment.duration(ms);
       let hours = Math.floor(d.asHours()) + moment.utc(ms).format(":mm");
       totalHours = sumHours([totalHours, hours])
+      let date1 = moment(moment(timeData.date).format("DD-MM-YYYY") + " " + time1, "YYYY-MM-DD HH:mm:ss")
+      let date2 = moment(moment(timeData.date).format("DD-MM-YYYY") + " " + time2, "YYYY-MM-DD HH:mm:ss")
+      const duration = moment.duration(date2.diff(date1));
+      timeSheet.totalDurationHours = parseFloat(timeSheet.totalDurationHours) + duration.asHours()
+      timeSheet.totalDurationMinutes = parseFloat(timeSheet.totalDurationMinutes) + duration.asMinutes()
+      timeSheet.totalDurationSeconds = parseInt(timeSheet.totalDurationSeconds) + duration.asSeconds()
       timeSheet.rows.push({
         _id: timeData._id,
         project: timeData.project.name,
         project_id: timeData.project._id,
         hours: hours,
+        durationHours: parseFloat(duration.asHours()).toFixed(2),
+        durationMinutes: parseFloat(duration.asMinutes()).toFixed(2),
+        durationSeconds: duration.asSeconds(),
         timeRange: timeData.time,
         date: moment(timeData.date).format("DD-MM-YYYY")
       })
       return nxtTime()
     }, () => {
       timeSheet.totalHours = totalHours
+      timeSheet.totalDurationHours = parseFloat(timeSheet.totalDurationHours).toFixed(2)
+      timeSheet.totalDurationMinutes = parseFloat(timeSheet.totalDurationMinutes).toFixed(2)
       res.status(200).json(timeSheet)
     })
   });

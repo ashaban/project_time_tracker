@@ -29,6 +29,9 @@ let Hours = new mongoose.Schema({
     ref: 'Project',
     required: true
   },
+  task: {
+    type: String
+  },
   date: {
     type: Date,
     required: true
