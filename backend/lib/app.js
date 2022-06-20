@@ -121,11 +121,42 @@ app.post('/addAutoTime', (req, res) => {
           winston.error('Unexpected error occured,please retry')
           res.status(500).send()
         } else {
+          models.OnProgressModel.findOneAndDelete({
+            user: "c5d2889c-eb46-476b-8b6a-b33f9191bf74"
+          }, (err) => {
+            if(err) {
+              logger.error(err);
+            }
+          })
           winston.info('Time added successfully')
           res.status(200).send()
         }
       })
     }
+  })
+})
+
+app.post('/UpdateProgress', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.parse(req, (err, fields, files) => {
+    models.OnProgressModel.findOneAndUpdate(
+      {
+        user: "c5d2889c-eb46-476b-8b6a-b33f9191bf74"
+      }, {
+      user: "c5d2889c-eb46-476b-8b6a-b33f9191bf74",
+      timeData: JSON.parse(fields.timeData)
+    }, {
+      upsert: true
+    }, (err, data) => {
+      if (err) {
+        winston.error(err)
+        winston.error('Unexpected error occured,please retry')
+        res.status(500).send()
+      } else {
+        winston.info('Progress updated successfully')
+        res.status(200).send()
+      }
+    })
   })
 })
 
@@ -147,6 +178,27 @@ app.post('/updateTime', (req, res) => {
         res.status(200).send()
       }
     })
+  })
+})
+
+app.get('/getProgress', (req, res) => {
+  models.OnProgressModel.findOne().lean().exec({}, (err, data) => {
+    if(data && data.timeData) {
+      return res.status(200).json(data.timeData)
+    }
+    res.status(200).json({})
+  })
+})
+
+app.delete('/deleteProgress', (req, res) => {
+  models.OnProgressModel.findOneAndDelete({
+    user: "c5d2889c-eb46-476b-8b6a-b33f9191bf74"
+  }, (err) => {
+    if(err) {
+      logger.error(err);
+      return res.status(500).send()
+    }
+    return res.status(200).send()
   })
 })
 

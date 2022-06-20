@@ -4,8 +4,11 @@
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to="AddTime" v-if="!$store.state.denyAccess">
+        <v-btn flat to="TrackTime" v-if="!$store.state.denyAccess">
           <v-icon>add</v-icon> Start Working
+        </v-btn>
+        <v-btn flat to="AddTime" v-if="!$store.state.denyAccess">
+          <v-icon>add</v-icon> Add Time Manually
         </v-btn>
         <v-btn flat to="TimeReport" v-if="!$store.state.denyAccess">
           <v-icon>list</v-icon> Time Report
@@ -69,7 +72,7 @@ export default {
     };
   },
   created() {
-    this.$router.push({ name: "TimeReport" });
+    this.$router.push({ name: "TrackTime" });
   }
 };
 </script>
