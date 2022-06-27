@@ -24,9 +24,17 @@
         <v-card class="mx-auto" style="max-width: 1000px;">
           <v-system-bar color="grey darken-2" dark />
           <v-toolbar color="grey darken-1" cards dark flat>
-            <v-card-title class="title font-weight-regular"
+            <v-card-title
+              v-if="!running && !timeData.timeBegan"
+              class="title font-weight-regular"
               >Select Project First Then Click Start To Begin
               Working</v-card-title
+            >
+            <v-card-title v-else-if="!running" class="title font-weight-regular"
+              >Save or Resume Your Paused Tracked Work</v-card-title
+            >
+            <v-card-title v-if="running" class="title font-weight-regular"
+              >Your work Is Being Tracked</v-card-title
             >
           </v-toolbar>
           <v-form ref="form" class="pa-3 pt-4">
@@ -87,7 +95,10 @@
                       >Resume</a
                     >
                     <a v-if="running" id="stop" @click="stop()">Pause</a>
-                    <a v-if="running" id="reset" @click="saveTime"
+                    <a
+                      v-if="running || (!running && timeData.timeBegan)"
+                      id="reset"
+                      @click="saveTime"
                       >Finish Work</a
                     >
                     <a
@@ -195,9 +206,11 @@ export default {
     projectSelected() {
       this.$v.project.$touch();
       this.timeData.project = this.project;
+      this.updateProgress();
     },
     tasksAdded() {
       this.timeData.tasks = this.task;
+      //need to call this.updateProgress()
     },
     resumeTimer() {
       this.timeBegan = new Date(this.timeData.timeBegan);
@@ -295,7 +308,9 @@ export default {
         "." +
         this.zeroPrefix(ms, 3);
       this.timeData.worked = this.time;
-      document.title = this.time;
+      if (this.time) {
+        document.title = this.time.split(".")[0];
+      }
     },
 
     updateProgress() {
