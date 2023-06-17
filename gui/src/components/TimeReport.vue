@@ -185,6 +185,7 @@
         <td>{{ props.item.project }}</td>
         <td>{{ props.item.date }}</td>
         <td>{{ props.item.timeRange }}</td>
+        <td>{{ props.item.task }}</td>
         <td>{{ props.item.durationHours }}</td>
         <td>{{ props.item.durationMinutes }}</td>
         <td>{{ props.item.durationSeconds }}</td>
@@ -208,6 +209,9 @@
       </v-flex>
       <v-flex xs2 align-content-end>
         <b>Total {{ totalHours }} Hours:Minutes</b>
+      </v-flex>
+      <v-flex xs2 align-content-end>
+        <b>Total {{ (totalDurationHours / 8).toFixed(2) }} Days</b>
       </v-flex>
     </v-layout>
   </v-container>
@@ -238,7 +242,6 @@ export default {
       editProject: "",
       project: "",
       time: "",
-      project: "",
       totalHours: "0:00",
       totalDurationHours: "",
       totalDurationMinutes: "",
@@ -248,6 +251,7 @@ export default {
         { text: "Project", value: "project" },
         { text: "Date", value: "date" },
         { text: "Time Range", value: "time" },
+        { text: "Tasks", value: "time" },
         { text: "Hours", value: "hours" },
         { text: "Minutes", value: "minutes" },
         { text: "Seconds", value: "seconds" }

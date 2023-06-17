@@ -269,6 +269,7 @@ app.get('/getTime', (req, res) => {
         _id: timeData._id,
         project: timeData.project.name,
         project_id: timeData.project._id,
+        task: timeData.task,
         hours: hours,
         durationHours: parseFloat(duration.asHours()).toFixed(2),
         durationMinutes: parseFloat(duration.asMinutes()).toFixed(2),

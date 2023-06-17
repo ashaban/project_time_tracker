@@ -142,17 +142,6 @@
             </v-layout>
           </v-form>
           <v-divider />
-          <v-card-actions>
-            <v-btn
-              @click="saveTime"
-              :disabled="$v.$invalid"
-              class="white--text"
-              color="deep-purple accent-4"
-              depressed
-            >
-              <v-icon left>how_to_reg</v-icon>Finish
-            </v-btn>
-          </v-card-actions>
         </v-card>
       </v-flex>
       <v-spacer />
