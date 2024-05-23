@@ -1,37 +1,40 @@
 <template>
   <v-container grid-list-xs>
+    Projects List
     <v-data-table
       :headers="reportHeader"
       :items="reportRows"
       pagination.sync="pagination"
       item-key="id"
     >
-      <template v-slot:items="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.code }}</td>
-        <td>{{ props.item.status }}</td>
-        <td>
-          <v-btn
-            color="secondary"
-            round
-            small
-            @click="changeStatus(props.item._id, 'inactive')"
-            v-if="props.item.status === 'active'"
-          >
-            <v-icon>edit</v-icon>
-            Deactivate
-          </v-btn>
-          <v-btn
-            color="secondary"
-            round
-            small
-            @click="changeStatus(props.item._id, 'active')"
-            v-else
-          >
-            <v-icon>edit</v-icon>
-            Activate
-          </v-btn>
-        </td>
+      <template v-slot:item="props">
+        <tr>
+          <td>{{ props.item.name }}</td>
+          <td>{{ props.item.code }}</td>
+          <td>{{ props.item.status }}</td>
+          <td>
+            <v-btn
+              color="secondary"
+              round
+              small
+              @click="changeStatus(props.item._id, 'inactive')"
+              v-if="props.item.status === 'active'"
+            >
+              <v-icon>mdi-pencil</v-icon>
+              Deactivate
+            </v-btn>
+            <v-btn
+              color="secondary"
+              round
+              small
+              @click="changeStatus(props.item._id, 'active')"
+              v-else
+            >
+              <v-icon>mdi-pencil</v-icon>
+              Activate
+            </v-btn>
+          </td>
+        </tr>
       </template>
     </v-data-table>
   </v-container>

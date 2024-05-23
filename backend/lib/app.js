@@ -224,6 +224,9 @@ app.get('/getTime', (req, res) => {
   let startDate = req.query.startDate
   let endDate = req.query.endDate
   let project = req.query.project
+  if(project == "null") {
+    project = ""
+  }
   console.info("Getting time worked")
   let filter = {}
   if (startDate && endDate) {

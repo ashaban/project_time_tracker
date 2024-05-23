@@ -42,7 +42,7 @@
                   @blur="$v.project.$touch()"
                   @change="$v.project.$touch()"
                   :error-messages="projectErrors"
-                  box
+                  filled
                   label="Project"
                 ></v-autocomplete>
                 <v-text-field
@@ -51,7 +51,7 @@
                   @change="$v.time.$touch()"
                   :error-messages="timeErrors"
                   v-model="time"
-                  box
+                  filled
                   color="deep-purple"
                   label="Time*"
                 />
@@ -59,17 +59,15 @@
                   v-model="dateMenu"
                   :close-on-content-click="false"
                   :nudge-right="40"
-                  lazy
                   transition="scale-transition"
                   offset-y
-                  full-width
                   min-width="290px"
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="dateFormatted"
                       label="Date"
-                      prepend-icon="event"
+                      prepend-icon="mdi-calendar"
                       readonly
                       v-on="on"
                     ></v-text-field>
@@ -91,7 +89,7 @@
               color="deep-purple accent-4"
               depressed
             >
-              <v-icon left>how_to_reg</v-icon>Add
+              <v-icon left>mdi-content-save-check</v-icon>Add
             </v-btn>
           </v-card-actions>
         </v-card>

@@ -51,10 +51,10 @@
                   @blur="$v.project.$touch()"
                   @change="projectSelected"
                   :error-messages="projectErrors"
-                  box
                   label="Project*"
                 ></v-autocomplete>
               </v-flex>
+              <br>
               <v-layout row wrap>
                 <v-flex xs2> </v-flex>
                 <v-flex xs10>
@@ -115,6 +115,7 @@
                 <template v-if="timeData.time.length > 0">
                   Time Laps
                 </template>
+                <br><br>
                 <v-layout row wrap>
                   <template v-for="(tm, index) in timeData.time">
                     <v-flex xs3 :key="index">
@@ -123,7 +124,7 @@
                           <b>{{ tm.date }}</b>
                         </v-card-title>
                         <v-card-text>
-                          {{ tm.start }} - {{ tm.end }}
+                          <b>{{ tm.start }} - {{ tm.end }}</b>
                         </v-card-text>
                       </v-card>
                     </v-flex>
@@ -133,7 +134,7 @@
               <v-flex>
                 <v-textarea
                   label="What are you working on"
-                  box
+                  filled
                   v-model="task"
                   hint="Tasks"
                   @input="tasksAdded"

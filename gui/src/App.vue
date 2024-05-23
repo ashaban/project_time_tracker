@@ -1,29 +1,27 @@
 <template>
   <v-app>
-    <v-toolbar color="secondary" dark app>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-items>
-        <v-btn flat to="TrackTime" v-if="!$store.state.denyAccess">
-          <v-icon>add</v-icon> Start Working
-        </v-btn>
-        <v-btn flat to="AddTime" v-if="!$store.state.denyAccess">
-          <v-icon>add</v-icon> Add Time Manually
-        </v-btn>
-        <v-btn flat to="TimeReport" v-if="!$store.state.denyAccess">
-          <v-icon>list</v-icon> Time Report
-        </v-btn>
-        <v-btn flat to="AddProject" v-if="!$store.state.denyAccess">
-          <v-icon>add</v-icon> Add Project
-        </v-btn>
-        <v-btn flat to="projectsReport" v-if="!$store.state.denyAccess">
-          <v-icon>list</v-icon> Projects
-        </v-btn>
-      </v-toolbar-items>
-      <v-spacer></v-spacer>
-      <v-toolbar-items> </v-toolbar-items>
-    </v-toolbar>
-    <v-content>
+    <v-main>
+      <v-toolbar color="secondary" dark>
+        <v-toolbar-title v-text="title"></v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn text to="TrackTime" v-if="!$store.state.denyAccess">
+            <v-icon>mdi-plus</v-icon> Start Working
+          </v-btn>
+          <v-btn text to="AddTime" v-if="!$store.state.denyAccess">
+            <v-icon>mdi-plus</v-icon> Add Time Manually
+          </v-btn>
+          <v-btn text to="TimeReport" v-if="!$store.state.denyAccess">
+            <v-icon>mdi-format-list-bulleted</v-icon> Time Report
+          </v-btn>
+          <v-btn text to="AddProject" v-if="!$store.state.denyAccess">
+            <v-icon>mdi-plus</v-icon> Add Project
+          </v-btn>
+          <v-btn text to="projectsReport" v-if="!$store.state.denyAccess">
+            <v-icon>mdi-format-list-bulleted</v-icon> Projects
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
       <v-dialog v-model="$store.state.dynamicProgress" persistent width="300">
         <v-card color="primary" dark>
           <v-card-text>
@@ -55,8 +53,9 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <br>
       <router-view />
-    </v-content>
+    </v-main>
     <v-footer dark color="secondary" :fixed="fixed" app> </v-footer>
   </v-app>
 </template>

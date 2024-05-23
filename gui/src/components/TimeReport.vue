@@ -5,7 +5,7 @@
         <v-toolbar color="secondary" dark>
           <v-spacer></v-spacer>
           <v-btn icon dark @click.native="editDialog = false">
-            <v-icon>close</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-card-text>
@@ -22,7 +22,7 @@
                 @blur="$v.editProject.$touch()"
                 @change="$v.editProject.$touch()"
                 :error-messages="editProjectErrors"
-                box
+                filled
                 label="Project"
               ></v-autocomplete>
               <v-text-field
@@ -31,7 +31,7 @@
                 @change="$v.time.$touch()"
                 :error-messages="timeErrors"
                 v-model="time"
-                box
+                filled
                 color="deep-purple"
                 label="Time*"
               />
@@ -39,17 +39,15 @@
                 v-model="dateMenu"
                 :close-on-content-click="false"
                 :nudge-right="40"
-                lazy
                 transition="scale-transition"
                 offset-y
-                full-width
                 min-width="290px"
               >
                 <template v-slot:activator="{ on }">
                   <v-text-field
                     v-model="dateFormatted"
                     label="Date"
-                    prepend-icon="event"
+                    prepend-icon="mdi-calendar"
                     readonly
                     v-on="on"
                   ></v-text-field>
@@ -68,7 +66,7 @@
             @click.native="editDialog = false"
             style="color: white"
           >
-            <v-icon dark left>cancel</v-icon>Cancel
+            <v-icon dark left>mdi-cancel</v-icon>Cancel
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
@@ -77,7 +75,7 @@
             dark
             @click.native="saveEdit()"
           >
-            <v-icon left>save</v-icon>Save
+            <v-icon left>mdi-content-save-check</v-icon>Save
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -89,17 +87,15 @@
           v-model="startDateMenu"
           :close-on-content-click="false"
           :nudge-right="40"
-          lazy
           transition="scale-transition"
           offset-y
-          full-width
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
             <v-text-field
               v-model="startDateFormatted"
               label="Start Date"
-              prepend-icon="event"
+              prepend-icon="mdi-calendar"
               readonly
               v-on="on"
             ></v-text-field>
@@ -116,17 +112,15 @@
           v-model="endDateMenu"
           :close-on-content-click="false"
           :nudge-right="40"
-          lazy
           transition="scale-transition"
           offset-y
-          full-width
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
             <v-text-field
               v-model="endDateFormatted"
               label="End Date"
-              prepend-icon="event"
+              prepend-icon="mdi-calendar"
               readonly
               v-on="on"
             ></v-text-field>
@@ -152,8 +146,8 @@
       </v-flex>
       <v-spacer></v-spacer>
       <v-flex xs2>
-        <v-btn color="secondary" round @click="getReport">
-          <v-icon left>list</v-icon> Filter
+        <v-btn color="secondary" rounded @click="getReport">
+          <v-icon left>mdi-format-list-bulleted</v-icon> Filter
         </v-btn>
       </v-flex>
     </v-layout>
@@ -181,7 +175,8 @@
       pagination.sync="pagination"
       item-key="id"
     >
-      <template v-slot:items="props">
+      <template v-slot:item="props">
+        <tr>
         <td>{{ props.item.project }}</td>
         <td>{{ props.item.date }}</td>
         <td>{{ props.item.timeRange }}</td>
@@ -190,10 +185,11 @@
         <td>{{ props.item.durationMinutes }}</td>
         <td>{{ props.item.durationSeconds }}</td>
         <td>
-          <v-btn color="secondary" round icon @click="editTime(props.item)">
-            <v-icon>edit</v-icon>
+          <v-btn color="secondary" rounded icon @click="editTime(props.item)">
+            <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </td>
+      </tr>
       </template>
     </v-data-table>
     <v-layout row wrap>
@@ -253,11 +249,11 @@ export default {
       reportHeader: [
         { text: "Project", value: "project" },
         { text: "Date", value: "date" },
-        { text: "Time Range", value: "time" },
-        { text: "Tasks", value: "time" },
-        { text: "Hours", value: "hours" },
-        { text: "Minutes", value: "minutes" },
-        { text: "Seconds", value: "seconds" }
+        { text: "Time Range", value: "timeRange" },
+        { text: "Tasks", value: "task" },
+        { text: "Hours", value: "durationHours" },
+        { text: "Minutes", value: "durationMinutes" },
+        { text: "Seconds", value: "durationSeconds" }
       ],
       startDateMenu: false,
       endDateMenu: false
