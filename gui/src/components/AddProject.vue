@@ -1,9 +1,6 @@
 <template>
   <v-container>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap>
       <v-spacer />
       <v-flex xs12>
         <v-alert
@@ -13,7 +10,7 @@
           dismissible
           transition="scale-transition"
         >
-          {{alertMsg}}
+          {{ alertMsg }}
         </v-alert>
         <v-alert
           style="width: 500px"
@@ -22,28 +19,16 @@
           dismissible
           transition="scale-transition"
         >
-          {{alertMsg}}
+          {{ alertMsg }}
         </v-alert>
-        <v-card
-          class="mx-auto"
-          style="max-width: 1000px;"
-        >
-          <v-system-bar
-            color="grey darken-2"
-            dark
-          />
-          <v-toolbar
-            color="grey darken-1"
-            cards
-            dark
-            flat
-          >
-            <v-card-title class="title font-weight-regular">Add New Project</v-card-title>
+        <v-card class="mx-auto" style="max-width: 1000px;">
+          <v-system-bar color="grey darken-2" dark />
+          <v-toolbar color="grey darken-1" cards dark flat>
+            <v-card-title class="title font-weight-regular"
+              >Add New Project</v-card-title
+            >
           </v-toolbar>
-          <v-form
-            ref="form"
-            class="pa-3 pt-4"
-          >
+          <v-form ref="form" class="pa-3 pt-4">
             <v-layout column>
               <v-flex>
                 <v-text-field
@@ -112,9 +97,9 @@
   </v-container>
 </template>
 <script>
-import axios from 'axios'
-import { required } from 'vuelidate/lib/validators'
-const backendServer = process.env.VUE_APP_BACKEND_SERVER
+import axios from "axios";
+import { required } from "vuelidate/lib/validators";
+const backendServer = process.env.VUE_APP_BACKEND_SERVER;
 
 export default {
   validations: {
@@ -122,73 +107,75 @@ export default {
     date: { required },
     code: { required }
   },
-  data () {
+  data() {
     return {
-      name: '',
+      name: "",
       dateMenu: false,
       date: new Date().toISOString().substr(0, 10),
-      code: '',
+      code: "",
       alertFail: false,
       alertSuccess: false,
-      alertMsg: ''
-    }
+      alertMsg: ""
+    };
   },
   methods: {
-    addProject () {
-      this.$store.state.dynamicProgress = true
-      this.$store.state.progressTitle = 'Saving Project'
-      let formData = new FormData()
-      formData.append('name', this.name)
-      formData.append('date', this.date)
-      formData.append('code', this.code)
-      axios.post(backendServer + '/addProject/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(() => {
-        let fields = Object.keys(this.$v.$params)
-        this.name = ''
-        this.code = ''
-        this.$store.state.dynamicProgress = false
-        this.alertSuccess = true
-        this.alertMsg = 'Project added successfully'
-        setTimeout(() => {
-          this.alertSuccess = false
-        }, 3000)
-      }).catch((err) => {
-        this.$store.state.dynamicProgress = false
-        this.alertFail = true
-        this.alertMsg = 'This Project was not added, something went wrong'
-        console.log(err.response.data.error)
-      })
-    },
+    addProject() {
+      this.$store.state.dynamicProgress = true;
+      this.$store.state.progressTitle = "Saving Project";
+      let formData = new FormData();
+      formData.append("name", this.name);
+      formData.append("date", this.date);
+      formData.append("code", this.code);
+      axios
+        .post(backendServer + "/addProject/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(() => {
+          this.name = "";
+          this.code = "";
+          this.$store.state.dynamicProgress = false;
+          this.alertSuccess = true;
+          this.alertMsg = "Project added successfully";
+          setTimeout(() => {
+            this.alertSuccess = false;
+          }, 3000);
+        })
+        .catch(err => {
+          this.$store.state.dynamicProgress = false;
+          this.alertFail = true;
+          this.alertMsg = "This Project was not added, something went wrong";
+          console.log(err.response.data.error);
+        });
+    }
   },
   computed: {
-    dateFormatted () {
+    dateFormatted() {
       if (!this.date) {
-        return null
+        return null;
       }
-      const [year, month, day] = this.date.split('-')
-      return `${day}/${month}/${year}`
+      const [year, month, day] = this.date.split("-");
+      return `${day}/${month}/${year}`;
     },
-    nameErrors () {
-      const errors = []
-      if (!this.$v.name.$dirty) return errors
-      !this.$v.name.required && errors.push('Project name is required')
-      return errors
+    nameErrors() {
+      const errors = [];
+      if (!this.$v.name.$dirty) return errors;
+      !this.$v.name.required && errors.push("Project name is required");
+      return errors;
     },
-    dateErrors () {
-      const errors = []
-      if (!this.$v.date.$dirty) return errors
-      !this.$v.date.required && errors.push('Date is required')
-      return errors
+    dateErrors() {
+      const errors = [];
+      if (!this.$v.date.$dirty) return errors;
+      !this.$v.date.required && errors.push("Date is required");
+      return errors;
     },
-    codeErrors () {
-      const errors = []
-      if (!this.$v.code.$dirty) return errors
-      !this.$v.code.required && errors.push('Tracking Code is required')
-      return errors
+    codeErrors() {
+      const errors = [];
+      if (!this.$v.code.$dirty) return errors;
+      !this.$v.code.required && errors.push("Tracking Code is required");
+      return errors;
     }
   }
-}
+};
 </script>

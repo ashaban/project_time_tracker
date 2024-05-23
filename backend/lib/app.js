@@ -1,10 +1,9 @@
 require('./init');
 const express = require('express')
-const winston = require('winston')
 const mongoose = require('mongoose')
 const formidable = require('formidable')
 const async = require('async')
-const moment = require('moment')
+const moment = require('moment-business-days');
 const cors = require('cors');
 
 const config = require('./config')
@@ -26,7 +25,7 @@ mongoose.connect(mongoURI);
 let db = mongoose.connection
 db.on("error", console.error.bind(console, "connection error:"))
 db.once("open", () => {
-  winston.info('DB Connection established')
+  console.info('DB Connection established')
 })
 const app = express()
 
@@ -37,7 +36,7 @@ app.use(cors({
 app.use(express.static(`${__dirname}/../gui`));
 
 app.post('/addProject', (req, res) => {
-  winston.info("Adding a project")
+  console.info("Adding a project")
   const form = new formidable.IncomingForm();
   form.parse(req, (err, fields, files) => {
     let Project = new models.ProjectModel({
@@ -48,11 +47,11 @@ app.post('/addProject', (req, res) => {
     })
     Project.save((err, data) => {
       if (err) {
-        winston.error(err)
-        winston.error('Unexpected error occured,please retry')
+        console.error(err)
+        console.error('Unexpected error occured,please retry')
         res.status(500).send()
       } else {
-        winston.info('Project added successfully')
+        console.info('Project added successfully')
         res.status(200).send()
       }
     })
@@ -62,7 +61,7 @@ app.post('/addProject', (req, res) => {
 app.get('/getProjects', (req, res) => {
   let id = req.query.id
   let status = req.query.status
-  winston.info('Getting projects')
+  console.info('Getting projects')
   let filter = {}
   if (id) {
     filter = {
@@ -74,7 +73,7 @@ app.get('/getProjects', (req, res) => {
   }
   models.ProjectModel.find(filter).lean().exec({}, (err, data) => {
     if (err) {
-      winston.error(err);
+      console.error(err);
       res.status(200).send('Unexpected error occured,please retry')
     }
     res.status(200).json(data)
@@ -82,7 +81,7 @@ app.get('/getProjects', (req, res) => {
 })
 
 app.post('/addTime', (req, res) => {
-  winston.info("Adding time worked")
+  console.info("Adding time worked")
   const form = new formidable.IncomingForm();
   form.parse(req, (err, fields, files) => {
     let Hours = new models.HoursModel({
@@ -92,11 +91,11 @@ app.post('/addTime', (req, res) => {
     })
     Hours.save((err, data) => {
       if (err) {
-        winston.error(err)
-        winston.error('Unexpected error occured,please retry')
+        console.error(err)
+        console.error('Unexpected error occured,please retry')
         res.status(500).send()
       } else {
-        winston.info('Time added successfully')
+        console.info('Time added successfully')
         res.status(200).send()
       }
     })
@@ -104,7 +103,7 @@ app.post('/addTime', (req, res) => {
 })
 
 app.post('/addAutoTime', (req, res) => {
-  winston.info("Adding time worked")
+  console.info("Adding time worked")
   const form = new formidable.IncomingForm();
   form.parse(req, (err, fields, files) => {
     let workData = JSON.parse(fields.workData)
@@ -117,8 +116,8 @@ app.post('/addAutoTime', (req, res) => {
       })
       Hours.save((err, data) => {
         if (err) {
-          winston.error(err)
-          winston.error('Unexpected error occured,please retry')
+          console.error(err)
+          console.error('Unexpected error occured,please retry')
           res.status(500).send()
         } else {
           models.OnProgressModel.findOneAndDelete({
@@ -128,7 +127,7 @@ app.post('/addAutoTime', (req, res) => {
               logger.error(err);
             }
           })
-          winston.info('Time added successfully')
+          console.info('Time added successfully')
           res.status(200).send()
         }
       })
@@ -149,11 +148,11 @@ app.post('/UpdateProgress', (req, res) => {
       upsert: true
     }, (err, data) => {
       if (err) {
-        winston.error(err)
-        winston.error('Unexpected error occured,please retry')
+        console.error(err)
+        console.error('Unexpected error occured,please retry')
         res.status(500).send()
       } else {
-        winston.info('Progress updated successfully')
+        console.info('Progress updated successfully')
         res.status(200).send()
       }
     })
@@ -170,11 +169,11 @@ app.post('/updateTime', (req, res) => {
       date: fields.date
     }, (err, data) => {
       if (err) {
-        winston.error(err)
-        winston.error('Unexpected error occured,please retry')
+        console.error(err)
+        console.error('Unexpected error occured,please retry')
         res.status(500).send()
       } else {
-        winston.info('Time updated successfully')
+        console.info('Time updated successfully')
         res.status(200).send()
       }
     })
@@ -210,11 +209,11 @@ app.post('/changeProjectStatus', (req, res) => {
       status: fields.status
     }, (err, data) => {
       if (err) {
-        winston.error(err)
-        winston.error('Unexpected error occured,please retry')
+        console.error(err)
+        console.error('Unexpected error occured,please retry')
         res.status(500).send()
       } else {
-        winston.info('Project updated successfully')
+        console.info('Project updated successfully')
         res.status(200).send()
       }
     })
@@ -225,7 +224,7 @@ app.get('/getTime', (req, res) => {
   let startDate = req.query.startDate
   let endDate = req.query.endDate
   let project = req.query.project
-  winston.info("Getting time worked")
+  console.info("Getting time worked")
   let filter = {}
   if (startDate && endDate) {
     filter = {
@@ -240,7 +239,7 @@ app.get('/getTime', (req, res) => {
   }
   models.HoursModel.find(filter).populate('project').lean().exec({}, (err, data) => {
     if (err) {
-      winston.error(err);
+      console.error(err);
       res.status(200).send('Unexpected error occured,please retry')
     }
     let totalHours = '0:00'
@@ -286,6 +285,12 @@ app.get('/getTime', (req, res) => {
     })
   });
 
+  app.get('/getWorkingDays/:startDate/:endDate', (req, res) => {
+    let to = moment(req.params.endDate, "YYYY-MM-DD").add(1, 'd').format("YYYY-MM-DD")
+    let days = moment(req.params.startDate, 'YYYY-MM-DD').businessDiff(moment(to, 'YYYY-MM-DD'))
+    return res.status(200).json({days})
+  })
+
   function sumHours(hours) {
     let hour1 = hours[0]
     let hour2 = hours[1]
@@ -307,5 +312,5 @@ app.get('/getTime', (req, res) => {
 })
 
 app.listen(port, () => {
-  winston.info("Server is running and listening on port " + port)
+  console.info("Server is running and listening on port " + port)
 })

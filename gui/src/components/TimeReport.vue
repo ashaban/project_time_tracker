@@ -197,7 +197,6 @@
       </template>
     </v-data-table>
     <v-layout row wrap>
-      <v-flex xs2> </v-flex>
       <v-flex xs2 align-content-end>
         <b>Total {{ totalDurationHours }} Hours</b>
       </v-flex>
@@ -212,6 +211,9 @@
       </v-flex>
       <v-flex xs2 align-content-end>
         <b>Total {{ (totalDurationHours / 8).toFixed(2) }} Days</b>
+      </v-flex>
+      <v-flex xs2 align-content-end>
+        <b>Required {{ expectedWorkingDays }} Days</b>
       </v-flex>
     </v-layout>
   </v-container>
@@ -246,6 +248,7 @@ export default {
       totalDurationHours: "",
       totalDurationMinutes: "",
       totalDurationSeconds: "",
+      expectedWorkingDays: 0,
       reportRows: [],
       reportHeader: [
         { text: "Project", value: "project" },
@@ -278,6 +281,17 @@ export default {
           this.totalDurationHours = response.data.totalDurationHours;
           this.totalDurationMinutes = response.data.totalDurationMinutes;
           this.totalDurationSeconds = response.data.totalDurationSeconds;
+        });
+      axios
+        .get(
+          backendServer +
+            "/getWorkingDays/" +
+            this.startDate +
+            "/" +
+            this.endDate
+        )
+        .then(response => {
+          this.expectedWorkingDays = response.data.days;
         });
     },
     editTime(time) {
